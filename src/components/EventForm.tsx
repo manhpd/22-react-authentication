@@ -1,29 +1,16 @@
+
+import classes from './EventForm.module.css';
+import { ActionFunctionArgs } from 'react-router-dom';
+import { ActionData, EventFormProps } from '../model/event.model';
+
 import {
   Form,
   useNavigate,
   useNavigation,
   useActionData,
-  json,
   redirect
 } from 'react-router-dom';
 
-import classes from './EventForm.module.css';
-
-export interface Event {
-  title: string;
-  image: string;
-  date: string;
-  description: string;
-}
-
-export interface EventFormProps {
-  method: 'post' | 'get' | 'put' | 'delete' | 'patch';
-  event?: Event;
-}
-
-interface ActionData {
-  errors?: { [key: string]: string };
-}
 
 function EventForm({ method, event }: EventFormProps) {
   const data = useActionData() as ActionData;
@@ -99,8 +86,6 @@ function EventForm({ method, event }: EventFormProps) {
 
 export default EventForm;
 
-import { ActionFunctionArgs } from 'react-router-dom';
-
 export async function action({ request, params }: ActionFunctionArgs) {
   const method = request.method;
   const data = await request.formData();
@@ -132,7 +117,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   }
 
   if (!response.ok) {
-    throw json({ message: 'Could not save event.' }, { status: 500 });
+    throw new Error('Could not save event.');
   }
 
   return redirect('/events');

@@ -4,7 +4,7 @@ import { useLoaderData, json, defer, Await } from 'react-router-dom';
 import EventsList from '../components/EventsList';
 
 function EventsPage() {
-  const { events } = useLoaderData();
+  const { events } = useLoaderData() as any;
 
   return (
     <Suspense fallback={<p style={{ textAlign: 'center' }}>Loading...</p>}>

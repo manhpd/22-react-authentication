@@ -1,6 +1,9 @@
 import NewsletterSignup from '../components/NewsletterSignup';
 import PageContent from '../components/PageContent';
 
+import { ActionFunction } from 'react-router-dom';
+
+
 function NewsletterPage() {
   return (
     <PageContent title="Join our awesome newsletter!">
@@ -11,7 +14,7 @@ function NewsletterPage() {
 
 export default NewsletterPage;
 
-export async function action({ request }) {
+export const action: ActionFunction = async ({ request } : any) => {
   const data = await request.formData();
   const email = data.get('email');
 

@@ -1,14 +1,15 @@
 import { Suspense } from 'react';
 import {
   useRouteLoaderData,
-  json,
   redirect,
-  defer,
   Await,
 } from 'react-router-dom';
 
 import EventItem from '../components/EventItem';
 import EventsList from '../components/EventsList';
+import { ActionFunctionArgs } from 'react-router-dom';
+
+import { LoaderFunctionArgs } from 'react-router-dom';
 
 function EventDetailPage() {
   const { event, events } = useRouteLoaderData('event-detail') as any;
@@ -35,12 +36,8 @@ async function loadEvent(id: string) {
   const response = await fetch('http://localhost:8080/events/' + id);
 
   if (!response.ok) {
-    throw json(
-      { message: 'Could not fetch details for selected event.' },
-      {
-        status: 500,
-      }
-    );
+    const errorData = await response.json();
+    throw errorData;
   } else {
     const resData = await response.json();
     return resData.event;
@@ -52,33 +49,22 @@ async function loadEvents() {
 
   if (!response.ok) {
     // return { isError: true, message: 'Could not fetch events.' };
-    // throw new Response(JSON.stringify({ message: 'Could not fetch events.' }), {
-    //   status: 500,
-    // });
-    throw json(
-      { message: 'Could not fetch events.' },
-      {
-        status: 500,
-      }
-    );
+    throw new Response(JSON.stringify({ message: 'Could not fetch events.' }), {
+      status: 500,
+    });
+    
   } else {
     const resData = await response.json();
     return resData.events;
   }
 }
 
-import { LoaderFunctionArgs } from 'react-router-dom';
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const id = params.eventId;
 
   if (!id) {
-    throw json(
-      { message: 'Event ID is missing.' },
-      {
-        status: 400,
-      }
-    );
+    throw new Error('Invalid event ID.');
   }
 
   return {
@@ -86,7 +72,6 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     events: loadEvents(),
   };
 }
-import { ActionFunctionArgs } from 'react-router-dom';
 
 export async function action({ params, request }: ActionFunctionArgs) {
   const eventId = params.eventId;
@@ -95,12 +80,9 @@ export async function action({ params, request }: ActionFunctionArgs) {
   });
 
   if (!response.ok) {
-    throw json(
-      { message: 'Could not delete event.' },
-      {
-        status: 500,
-      }
-    );
+    throw new Response(JSON.stringify({ message: 'Could not delete event.' }), {
+      status: 500,
+    });
   }
   return redirect('/events');
 }
